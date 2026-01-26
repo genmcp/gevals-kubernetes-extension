@@ -1,8 +1,8 @@
-# gevals-kubernetes-extension
+# kubernetes-extension
 
-A [gevals](https://github.com/genmcp/gevals) extension that provides Kubernetes resource operations for task setup, verification, and cleanup.
+A [mcpchecker](https://github.com/mcpchecker/mcpchecker) extension that provides Kubernetes resource operations for task setup, verification, and cleanup.
 
-This extension enables declarative Kubernetes interactions within gevals tasks. It also provides verification-specific operations that don't belong in MCP server tools but are essential for evaluating them. For example, waiting for a pod to reach a specific condition isn't useful as an MCP tool, but is exactly what you need to verify that an MCP server correctly modified a pod.
+This extension enables declarative Kubernetes interactions within mcpchecker tasks. It also provides verification-specific operations that don't belong in MCP server tools but are essential for evaluating them. For example, waiting for a pod to reach a specific condition isn't useful as an MCP tool, but is exactly what you need to verify that an MCP server correctly modified a pod.
 
 ## Operations
 
@@ -27,7 +27,7 @@ config:
   mcpConfigFile: mcp-config.yaml
   extensions:
     kubernetes:
-      package: https://github.com/genmcp/gevals-kubernetes-extension@v0.0.1
+      package: https://github.com/mcpchecker/kubernetes-extension@v0.0.2
       config:
         kubeconfig: ~/.kube/config  # optional, defaults to ~/.kube/config
   taskSets:

@@ -1,4 +1,4 @@
-BINARY_NAME := gevals-kubernetes-extension
+BINARY_NAME := kubernetes-extension
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 

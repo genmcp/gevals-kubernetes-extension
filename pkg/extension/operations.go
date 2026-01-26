@@ -1,7 +1,7 @@
 package extension
 
 import (
-	"github.com/genmcp/gevals/pkg/extension/sdk"
+	"github.com/mcpchecker/mcpchecker/pkg/extension/sdk"
 	"github.com/google/jsonschema-go/jsonschema"
 )
 

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/genmcp/gevals/pkg/extension/sdk"
+	"github.com/mcpchecker/mcpchecker/pkg/extension/sdk"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/clientcmd"
 )

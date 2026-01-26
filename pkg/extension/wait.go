@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/genmcp/gevals/pkg/extension/sdk"
+	"github.com/mcpchecker/mcpchecker/pkg/extension/sdk"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
 )

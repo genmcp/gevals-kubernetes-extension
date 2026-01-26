@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/genmcp/gevals/pkg/extension/sdk"
+	"github.com/mcpchecker/mcpchecker/pkg/extension/sdk"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
