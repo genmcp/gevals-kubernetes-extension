@@ -9,6 +9,7 @@ import (
 
 	"github.com/mcpchecker/mcpchecker/pkg/extension/sdk"
 	"k8s.io/client-go/dynamic"
+	authorizationv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -74,7 +75,12 @@ func (e *Extension) handleInitialize(config map[string]any) error {
 		return fmt.Errorf("failed to create dynamic client: %w", err)
 	}
 
-	e.client = &dynamicClientAdapter{client: client}
+	authzClient, err := authorizationv1client.NewForConfig(kubeconfig)
+	if err != nil {
+		return fmt.Errorf("failed to create authorization client: %w", err)
+	}
+
+	e.client = &dynamicClientAdapter{client: client, authzClient: authzClient}
 	return nil
 }
 
