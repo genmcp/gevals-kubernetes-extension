@@ -153,4 +153,43 @@ func (e *Extension) registerOperations() {
 		),
 		e.handleAuthCanI,
 	)
+
+	e.AddOperation(
+		sdk.NewOperation("listContexts",
+			sdk.WithDescription("List all contexts from kubeconfig"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "No parameters required",
+			}),
+		),
+		e.handleListContexts,
+	)
+
+	e.AddOperation(
+		sdk.NewOperation("getCurrentContext",
+			sdk.WithDescription("Get the current context from kubeconfig"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "No parameters required",
+			}),
+		),
+		e.handleGetCurrentContext,
+	)
+
+	e.AddOperation(
+		sdk.NewOperation("viewConfig",
+			sdk.WithDescription("View kubeconfig as YAML"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "Configuration view options",
+				Properties: map[string]*jsonschema.Schema{
+					"minify": {
+						Type:        "boolean",
+						Description: "If true, only show current context (default: false)",
+					},
+				},
+			}),
+		),
+		e.handleViewConfig,
+	)
 }

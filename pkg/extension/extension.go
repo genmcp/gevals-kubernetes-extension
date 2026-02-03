@@ -80,7 +80,11 @@ func (e *Extension) handleInitialize(config map[string]any) error {
 		return fmt.Errorf("failed to create authorization client: %w", err)
 	}
 
-	e.client = &dynamicClientAdapter{client: client, authzClient: authzClient}
+	e.client = &dynamicClientAdapter{
+		client:         client,
+		authzClient:    authzClient,
+		kubeconfigPath: kubeconfigPath,
+	}
 	return nil
 }
 

@@ -11,6 +11,9 @@ This extension enables declarative Kubernetes interactions within mcpchecker tas
 | `kubernetes.authCanI` | Check if a user or service account can perform an action on a resource |
 | `kubernetes.create` | Create a Kubernetes resource |
 | `kubernetes.delete` | Delete a Kubernetes resource |
+| `kubernetes.getCurrentContext` | Get the current context from kubeconfig |
+| `kubernetes.listContexts` | List all contexts from kubeconfig |
+| `kubernetes.viewConfig` | View kubeconfig as YAML (optionally minified) |
 | `kubernetes.wait` | Wait for a condition on a resource (e.g., `Ready`, `Available`) |
 
 ## Configuration
@@ -131,6 +134,43 @@ Waits for a condition on a resource. Supports configurable timeout and expected 
     status: "True"    # optional, defaults to "True"
     timeout: 5m       # optional, defaults to 60s
 ```
+
+### kubernetes.listContexts
+
+Lists all contexts from the kubeconfig file, including which one is currently active.
+
+```yaml
+- kubernetes.listContexts:
+    # No parameters required
+```
+
+**Outputs:**
+- `current`: Name of the current context
+- `count`: Number of contexts found
+
+### kubernetes.getCurrentContext
+
+Returns the current context name from the kubeconfig.
+
+```yaml
+- kubernetes.getCurrentContext:
+    # No parameters required
+```
+
+**Outputs:**
+- `context`: Name of the current context
+
+### kubernetes.viewConfig
+
+Views the kubeconfig as YAML, optionally minified to show only the current context.
+
+```yaml
+- kubernetes.viewConfig:
+    minify: false  # optional, defaults to false
+```
+
+**Outputs:**
+- `config`: The kubeconfig content as YAML
 
 ## Contributing
 
