@@ -105,4 +105,52 @@ func (e *Extension) registerOperations() {
 		),
 		e.handleDelete,
 	)
+
+	e.AddOperation(
+		sdk.NewOperation("authCanI",
+			sdk.WithDescription("Check if a user or service account can perform an action on a resource"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "Permission check parameters",
+				Properties: map[string]*jsonschema.Schema{
+					"verb": {
+						Type:        "string",
+						Description: "Action verb (get, list, create, delete, watch, patch, update, etc.)",
+					},
+					"resource": {
+						Type:        "string",
+						Description: "Resource name (pods, deployments, configmaps, etc.)",
+					},
+					"as": {
+						Type:        "string",
+						Description: "User or service account to impersonate (e.g., alice, system:serviceaccount:ns:sa-name)",
+					},
+					"namespace": {
+						Type:        "string",
+						Description: "Namespace scope (optional, empty for cluster-wide check)",
+					},
+					"apiGroup": {
+						Type:        "string",
+						Description: "API group (optional, empty for core API, e.g., apps, batch, rbac.authorization.k8s.io)",
+					},
+					"resourceName": {
+						Type:        "string",
+						Description: "Specific resource name to check access for (optional)",
+					},
+					"expect": {
+						Type:        "object",
+						Description: "Expected result for inline verification",
+						Properties: map[string]*jsonschema.Schema{
+							"allowed": {
+								Type:        "boolean",
+								Description: "Expected permission result (true for allowed, false for denied)",
+							},
+						},
+					},
+				},
+				Required: []string{"verb", "resource", "as"},
+			}),
+		),
+		e.handleAuthCanI,
+	)
 }

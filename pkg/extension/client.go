@@ -3,10 +3,12 @@ package extension
 import (
 	"context"
 
+	authorizationv1 "k8s.io/api/authorization/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
+	authorizationv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 )
 
 // ResourceClient abstracts Kubernetes resource operations for testability.
@@ -20,11 +22,15 @@ type ResourceClient interface {
 
 	// Delete removes a Kubernetes resource.
 	Delete(ctx context.Context, gvr schema.GroupVersionResource, name, namespace string, opts metav1.DeleteOptions) error
+
+	// CheckAccess checks if a user can perform an action on a resource.
+	CheckAccess(ctx context.Context, user, verb, resource, apiGroup, namespace, resourceName string) (bool, string, error)
 }
 
 // dynamicClientAdapter adapts the Kubernetes dynamic client to the ResourceClient interface.
 type dynamicClientAdapter struct {
-	client dynamic.Interface
+	client    dynamic.Interface
+	authzClient authorizationv1client.AuthorizationV1Interface
 }
 
 func (a *dynamicClientAdapter) Create(ctx context.Context, gvr schema.GroupVersionResource, obj *unstructured.Unstructured, namespace string) (*unstructured.Unstructured, error) {
@@ -46,4 +52,26 @@ func (a *dynamicClientAdapter) Delete(ctx context.Context, gvr schema.GroupVersi
 		return a.client.Resource(gvr).Namespace(namespace).Delete(ctx, name, opts)
 	}
 	return a.client.Resource(gvr).Delete(ctx, name, opts)
+}
+
+func (a *dynamicClientAdapter) CheckAccess(ctx context.Context, user, verb, resource, apiGroup, namespace, resourceName string) (bool, string, error) {
+	sar := &authorizationv1.SubjectAccessReview{
+		Spec: authorizationv1.SubjectAccessReviewSpec{
+			User: user,
+			ResourceAttributes: &authorizationv1.ResourceAttributes{
+				Verb:      verb,
+				Resource:  resource,
+				Group:     apiGroup,
+				Namespace: namespace,
+				Name:      resourceName,
+			},
+		},
+	}
+
+	result, err := a.authzClient.SubjectAccessReviews().Create(ctx, sar, metav1.CreateOptions{})
+	if err != nil {
+		return false, "", err
+	}
+
+	return result.Status.Allowed, result.Status.Reason, nil
 }
