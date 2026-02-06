@@ -192,4 +192,78 @@ func (e *Extension) registerOperations() {
 		),
 		e.handleViewConfig,
 	)
+
+	// Helm operations
+	e.AddOperation(
+		sdk.NewOperation("helmInstall",
+			sdk.WithDescription("Install a Helm chart as a release"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "Helm chart installation parameters",
+				Properties: map[string]*jsonschema.Schema{
+					"chart": {
+						Type:        "string",
+						Description: "Chart reference (e.g., bitnami/nginx, oci://registry-1.docker.io/bitnamicharts/nginx)",
+					},
+					"name": {
+						Type:        "string",
+						Description: "Release name (optional, generates name if not provided)",
+					},
+					"namespace": {
+						Type:        "string",
+						Description: "Target namespace (optional)",
+					},
+					"values": {
+						Type:        "object",
+						Description: "Helm values to set (optional)",
+					},
+				},
+				Required: []string{"chart"},
+			}),
+		),
+		e.handleHelmInstall,
+	)
+
+	e.AddOperation(
+		sdk.NewOperation("helmList",
+			sdk.WithDescription("List Helm releases"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "Helm list parameters",
+				Properties: map[string]*jsonschema.Schema{
+					"namespace": {
+						Type:        "string",
+						Description: "Namespace to list releases from (optional)",
+					},
+					"allNamespaces": {
+						Type:        "boolean",
+						Description: "List releases from all namespaces (default: false)",
+					},
+				},
+			}),
+		),
+		e.handleHelmList,
+	)
+
+	e.AddOperation(
+		sdk.NewOperation("helmUninstall",
+			sdk.WithDescription("Uninstall a Helm release"),
+			sdk.WithParams(jsonschema.Schema{
+				Type:        "object",
+				Description: "Helm uninstall parameters",
+				Properties: map[string]*jsonschema.Schema{
+					"name": {
+						Type:        "string",
+						Description: "Release name to uninstall",
+					},
+					"namespace": {
+						Type:        "string",
+						Description: "Release namespace (optional)",
+					},
+				},
+				Required: []string{"name"},
+			}),
+		),
+		e.handleHelmUninstall,
+	)
 }
