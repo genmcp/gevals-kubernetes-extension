@@ -2,10 +2,17 @@ package extension
 
 import (
 	"context"
+	"os/exec"
 	"testing"
 
 	"github.com/mcpchecker/mcpchecker/pkg/extension/sdk"
 )
+
+// helmAvailable checks if the helm CLI is available in PATH
+func helmAvailable() bool {
+	_, err := exec.LookPath("helm")
+	return err == nil
+}
 
 func TestHandleHelmInstall(t *testing.T) {
 	tests := []struct {
@@ -78,17 +85,20 @@ func TestHandleHelmList(t *testing.T) {
 		name        string
 		args        any
 		wantSuccess bool
+		requireHelm bool // true if test actually executes helm
 	}{
 		{
 			name:        "invalid args type",
 			args:        "invalid",
 			wantSuccess: false,
+			requireHelm: false, // parameter validation only
 		},
 		{
 			name: "valid empty args",
 			args: map[string]any{},
 			// helm list succeeds even with no releases (returns empty list)
 			wantSuccess: true,
+			requireHelm: true,
 		},
 		{
 			name: "with namespace",
@@ -96,6 +106,7 @@ func TestHandleHelmList(t *testing.T) {
 				"namespace": "default",
 			},
 			wantSuccess: true,
+			requireHelm: true,
 		},
 		{
 			name: "all namespaces",
@@ -103,11 +114,15 @@ func TestHandleHelmList(t *testing.T) {
 				"allNamespaces": true,
 			},
 			wantSuccess: true,
+			requireHelm: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.requireHelm && !helmAvailable() {
+				t.Skip("helm CLI not available, skipping test that requires helm")
+			}
 			ext := &Extension{
 				Extension: sdk.NewExtension(sdk.ExtensionInfo{Name: "test"}),
 			}
@@ -131,11 +146,13 @@ func TestHandleHelmUninstall(t *testing.T) {
 		name        string
 		args        any
 		wantSuccess bool
+		requireHelm bool // true if test actually executes helm
 	}{
 		{
 			name:        "missing name parameter",
 			args:        map[string]any{},
 			wantSuccess: false,
+			requireHelm: false, // parameter validation only
 		},
 		{
 			name: "empty name parameter",
@@ -143,11 +160,13 @@ func TestHandleHelmUninstall(t *testing.T) {
 				"name": "",
 			},
 			wantSuccess: false,
+			requireHelm: false, // parameter validation only
 		},
 		{
 			name:        "invalid args type",
 			args:        "invalid",
 			wantSuccess: false,
+			requireHelm: false, // parameter validation only
 		},
 		{
 			name: "valid name parameter for non-existent release",
@@ -156,6 +175,7 @@ func TestHandleHelmUninstall(t *testing.T) {
 			},
 			// Succeeds because code handles "not found" gracefully
 			wantSuccess: true,
+			requireHelm: true,
 		},
 		{
 			name: "with namespace",
@@ -164,11 +184,15 @@ func TestHandleHelmUninstall(t *testing.T) {
 				"namespace": "default",
 			},
 			wantSuccess: true,
+			requireHelm: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.requireHelm && !helmAvailable() {
+				t.Skip("helm CLI not available, skipping test that requires helm")
+			}
 			ext := &Extension{
 				Extension: sdk.NewExtension(sdk.ExtensionInfo{Name: "test"}),
 			}
